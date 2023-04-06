@@ -1,0 +1,2 @@
+# Analisis Sentimen Tentang Isu Obat Sirup Penyebab Ginjal Akut pada Video di Youtube menggunakan Algoritma CNN dan LSTM
+Analisis sentimen komentar pada video di YouTube terkait isu obat sirup penyebab ginjal akut menggunakan perbandingan algoritma Convolutional Neural Network (CNN) dan Long Short-Term Memory (LSTM). Tujuan penelitian ini Mengetahui sentimen masyarakat terkait isu obat sirup penyebab ginjal akut pada komentar di channel Youtube.
