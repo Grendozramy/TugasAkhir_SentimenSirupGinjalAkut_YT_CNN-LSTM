@@ -1,28 +1,36 @@
+# Mengimpor modul yang diperlukan
 import os
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from iteration_utilities import unique_everseen
 
-# Import the modified process_comments and make_csv functions
+# Mengimpor fungsi process_comments dan make_csv yang telah dimodifikasi
 from utils.youtube_comments import process_comments, make_csv
 
+# Memuat variabel lingkungan dari file .env
 load_dotenv()
+
+# Mengambil API Key dari variabel lingkungan
 API_KEY = os.getenv("API_KEY")
 
+# Membangun layanan API YouTube v3
 youtube = build("youtube", "v3", developerKey=API_KEY)
 
 def comment_threads(videoId, to_csv=True):
     comments_list = []
 
-    # Fetch comments using YouTube API
+    # Mengambil komentar menggunakan API YouTube
     request = youtube.commentThreads().list(
         part='id,snippet',
         videoId=videoId,
     )
+    # Menjalankan permintaan dan mendapatkan respons
     response = request.execute()
+
+    # Memproses komentar dalam respons dan menambahkannya ke dalam daftar
     comments_list.extend(process_comments(response['items'], csv_output=False))
 
-    # Continue fetching comments if nextPageToken exists
+    # Melanjutkan pengambilan komentar jika nextPageToken ada
     while response.get('nextPageToken', None):
         request = youtube.commentThreads().list(
             part='id,snippet',
@@ -32,18 +40,22 @@ def comment_threads(videoId, to_csv=True):
         response = request.execute()
         comments_list.extend(process_comments(response['items']))
 
-    # Remove duplicates from comments_list
+    # Menghapus duplikat dari daftar komentar
     comments_list = list(unique_everseen(comments_list))
 
-    print(f"Finished fetching comments for {videoId}. {len(comments_list)} comments found.")
+    print(f"Selesai mengambil komentar untuk {videoId}. {len(comments_list)} komentar ditemukan.")
 
-    # Save comments to CSV file if to_csv is True
+    # Menyimpan komentar ke file CSV jika to_csv adalah True
     if to_csv:
         make_csv(comments_list, videoId)
 
+    # Mengembalikan daftar komentar
     return comments_list
 
 if __name__ == '__main__':
+    # Mendefinisikan ID dari video untuk mengambil komentar
     videoId = 'yiffzzl7EFY'
+    # Mengambil komentar dan mencetaknya
     response = comment_threads(videoId)
     print(response)
+

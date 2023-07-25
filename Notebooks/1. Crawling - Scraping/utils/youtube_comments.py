@@ -1,40 +1,50 @@
+# Impor modul yang diperlukan: csv untuk menulis file CSV, dan datetime untuk mengambil tanggal hari ini
 import csv
 from datetime import datetime as dt
 
-# Initialize an empty list to store comments
+# Inisialisasi list kosong untuk menyimpan komentar
 comments = []
 
-# Get today's date in the format 'dd-mm-yyyy'
+# Dapatkan tanggal hari ini dalam format 'dd-mm-yyyy'
 today = dt.today().strftime('%d-%m-%Y')
 
-# Function to process comments and optionally save them to a CSV file
+# Fungsi untuk memproses komentar dan opsional menyimpannya ke file CSV
 def process_comments(response_items, csv_output=False):
+    # Loop melalui setiap item dalam response_items
     for res in response_items:
+        # Buat kamus kosong untuk menyimpan detail setiap komentar
         comment = {}
+        # Simpan snippet dari komentar tingkat atas
         comment['snippet'] = res['snippet']['topLevelComment']['snippet']
+        # Tidak ada parentId untuk komentar tingkat atas, jadi atur sebagai None
         comment['snippet']['parentId'] = None
+        # Simpan ID dari komentar tingkat atas
         comment['snippet']['commentId'] = res['snippet']['topLevelComment']['id']
+        # Tambahkan kamus 'snippet' ke list 'comments'
         comments.append(comment['snippet'])
 
-    # Save comments to a CSV file if csv_output is True
+    # Jika csv_output adalah True, simpan komentar ke file CSV
     if csv_output:
         make_csv(comments)
 
+    # Cetak jumlah komentar yang diproses
     print(f'Finished processing {len(comments)} comments.')
+    # Kembalikan list 'comments'
     return comments
 
-# Function to save comments to a CSV file
+# Fungsi untuk menyimpan komentar ke file CSV
 def make_csv(comments, channelID=None):
+    # Dapatkan kunci dari kamus pertama dalam 'comments' untuk digunakan sebagai header CSV
     header = comments[0].keys()
 
-    # Set the filename based on the channelID and today's date
+    # Atur nama file berdasarkan channelID dan tanggal hari ini
     if channelID:
         filename = f'comments_{channelID}_{today}.csv'
     else:
         filename = f'comments_{today}.csv'
 
-    # Write the comments to the CSV file
+    # Tulis komentar ke file CSV
     with open(filename, 'w', encoding='utf8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=header, extrasaction='ignore')
-        writer.writeheader()
-        writer.writerows(comments)
+        writer.writeheader()  # Tulis header
+        writer.writerows(comments)  # Tulis baris komentar
